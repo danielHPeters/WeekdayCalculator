@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/WeekdayCalculator.iml" filepath="$PROJECT_DIR$/WeekdayCalculator.iml" />
+      <module fileurl="file://$PROJECT_DIR$/weekday-calculator.iml" filepath="$PROJECT_DIR$/weekday-calculator.iml" />
     </modules>
   </component>
 </project>
