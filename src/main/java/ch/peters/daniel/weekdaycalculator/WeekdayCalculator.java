@@ -77,7 +77,7 @@ public class WeekdayCalculator {
    * zurückgegeben wird.
    */
   private int monatszifferFinden(int month) {
-    int monz = 0;
+    int monz;
     switch (month) {
       case 1:
         monz = 0;
@@ -115,6 +115,8 @@ public class WeekdayCalculator {
       case 12:
         monz = 5;
         break;
+      default:
+        monz = 0;
     }
     return monz;
   }
@@ -200,6 +202,8 @@ public class WeekdayCalculator {
       case 6:
         day = "Saturday";
         break;
+      default:
+        day = "Unknown";
     }
 
     return day;
