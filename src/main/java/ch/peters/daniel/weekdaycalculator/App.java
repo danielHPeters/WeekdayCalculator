@@ -13,10 +13,13 @@ public class App {
    * @param args The command line arguments
    */
   public static void main(String[] args) {
-    var calculator = new WeekdayCalculator();
+    var inputReader = new ConsoleInputReader();
+    var clock = new Clock();
+    var weekdayCalculator = new WeekdayCalculator(inputReader);
+    var timespanCalculator = new TimeSpanCalculator(inputReader);
 
-    calculator.showTime();
-    calculator.showWeekday();
-    calculator.daysTillBirthday();
+    clock.showCurrentTime();
+    weekdayCalculator.showWeekday();
+    timespanCalculator.daysTillBirthday();
   }
 }

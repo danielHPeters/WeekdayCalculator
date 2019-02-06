@@ -1,11 +1,5 @@
 package ch.peters.daniel.weekdaycalculator;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.InputMismatchException;
-import java.util.Scanner;
-
 /**
  * Weekday calculator based on Wikipedia pseudo code.
  * https://de.wikipedia.org/wiki/Wochentagsberechnung
@@ -14,59 +8,13 @@ import java.util.Scanner;
  * @version 1.0
  */
 public class WeekdayCalculator {
-  private final Scanner scanner = new Scanner(System.in);
+  private InputReader inputReader;
 
   /**
-   * Get input as number.
-   *
-   * @param measurements
-   * @return
+   * @param inputReader
    */
-  private int readNumber(TimeMeasurements measurements) {
-    var input = 0;
-
-    try {
-      switch (measurements) {
-        case DAY:
-          System.out.println("Please enter valid day (1 - 31)");
-          input = read(1, 31);
-          break;
-
-        case MONTH:
-          System.out.println("Please enter valid month (1 - 12)");
-          input = read(1, 12);
-          break;
-
-        case YEAR:
-          System.out.println("Please enter valid year (1 - 9999)");
-          input = read(1, 9999);
-          break;
-
-        default:
-          break;
-      }
-    } catch (InputMismatchException e) {
-      System.out.println("Invalid input!");
-    }
-
-    return input;
-  }
-
-  /**
-   * Read until valid input is given.
-   *
-   * @param min minimum value
-   * @param max maximum value
-   * @return input number
-   */
-  private int read(int min, int max) {
-    int input;
-
-    do {
-      input = scanner.nextInt();
-    } while (input < min && input > max);
-
-    return input;
+  public WeekdayCalculator(InputReader inputReader) {
+    this.inputReader = inputReader;
   }
 
   /**
@@ -75,8 +23,11 @@ public class WeekdayCalculator {
    * untenstehende Methode erhält den eingegeben Monat als Parameter und sucht
    * dann im Switch nach der entsprechenden Monatsziffer, die dann
    * zurückgegeben wird.
+   *
+   * @param month
+   * @return
    */
-  private int monatszifferFinden(int month) {
+  private int getMonthDigit(int month) {
     int monz;
 
     switch (month) {
@@ -128,32 +79,32 @@ public class WeekdayCalculator {
    * @param year year
    * @return
    */
-  private int jahreszifferBerechnen(int year) {
+  private int calculateYearDigit(int year) {
     var jz = year % 100;
+
     return (jz + (jz / 4)) % 7;
   }
 
   /**
-   * Die Formel zur Berechnung der Jahrhundertziffer wird hier ausgeführt.
+   * Calculate the century digit via the formula taken from wikipedia.
+   *
+   * @param year
+   * @return
    */
-  private int jahrhundertzifferBerechnen(int year) {
+  private int calculateCenturyDigit(int year) {
     var jhz = year / 100;
+
     return (3 - (jhz % 4)) * 2;
   }
 
   /**
-   * Da es Schaltjahre gibt, würde die Berechnung nicht ganz aufgehen. In
-   * einem schaltjahr würden die Wochentage im Januar und Februar nicht
-   * stimmen. Deshalb muss bei jedem Schaltjahr entweder -1 oder +6 zur
-   * Gesamtberechnung hinzugefügt werden. Dazu wird überprüft, ob das jahr ein
-   * Schaltjahr ist, und dann ob es ein Januar oder Februar ist.
-   *
    * @param month
    * @param year
    * @return
    */
-  private int leapYearCorrection(int month, int year) {
+  private int getLeapYearCorrection(int month, int year) {
     var leapYear = 0;
+
     if ((year % 4 == 0 && year % 100 != 0) || year % 400 == 0) {
       if (month < 3 && month > 0) {
         leapYear = -1;
@@ -167,14 +118,14 @@ public class WeekdayCalculator {
    * richtige Wochentag ermittelt werden. Als Parameter alle vorher
    * berechneten Ziffern und die Schaltjahrkorrektur
    *
-   * @param wochentagsziffer
+   * @param weekDayDigit
    * @return
    */
-  private String searchDay(int wochentagsziffer) {
+  private String getWeekDay(int weekDayDigit) {
     var day = "";
 
     // Select the correct day
-    switch (wochentagsziffer) {
+    switch (weekDayDigit) {
       case 0:
         day = "Sunday";
         break;
@@ -203,35 +154,20 @@ public class WeekdayCalculator {
     return day;
   }
 
-  public void showTime() {
-    var date = LocalDateTime.now();
-
-    System.out.println("The current date and time is: " + date.toString());
-  }
-
-  public void daysTillBirthday() {
-    System.out.println("Please enter your next birthday:");
-
-    var day = readNumber(TimeMeasurements.DAY);
-    var month = readNumber(TimeMeasurements.MONTH);
-    var year = readNumber(TimeMeasurements.YEAR);
-    var daysCount = ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.of(year, month, day));
-
-    System.out.println("Your birthday is in " + daysCount + " days.");
-  }
-
+  /**
+   *
+   */
   public void showWeekday() {
-    var day = readNumber(TimeMeasurements.DAY);
-    var month = readNumber(TimeMeasurements.MONTH);
-    var year = readNumber(TimeMeasurements.YEAR);
-
-    var tagesziffer = day % 7;
-    var monatsziffer = monatszifferFinden(month);
-    var jahresziffer = jahreszifferBerechnen(year);
-    var jahrhundertziffer = jahrhundertzifferBerechnen(year);
-    var schaltjahrkorrektur = leapYearCorrection(month, year);
-    var wochentagsziffer = (tagesziffer + monatsziffer + jahresziffer + jahrhundertziffer + schaltjahrkorrektur) % 7;
-    var weekDay = searchDay(wochentagsziffer);
+    var day = inputReader.getDateNumberByMeasurement(TimeMeasurements.DAY);
+    var month = inputReader.getDateNumberByMeasurement(TimeMeasurements.MONTH);
+    var year = inputReader.getDateNumberByMeasurement(TimeMeasurements.YEAR);
+    var dayDigit = day % 7;
+    var monthDigit = getMonthDigit(month);
+    var yearDigit = calculateYearDigit(year);
+    var centuryDigit = calculateCenturyDigit(year);
+    var leapYearCorrection = getLeapYearCorrection(month, year);
+    var weekdayDigit = (dayDigit + monthDigit + yearDigit + centuryDigit + leapYearCorrection) % 7;
+    var weekDay = getWeekDay(weekdayDigit);
 
     System.out.println();
     System.out.println("Entered date:");
