@@ -78,6 +78,7 @@ public class WeekdayCalculator {
    */
   private int monatszifferFinden(int month) {
     int monz;
+
     switch (month) {
       case 1:
         monz = 0;
@@ -166,17 +167,10 @@ public class WeekdayCalculator {
    * richtige Wochentag ermittelt werden. Als Parameter alle vorher
    * berechneten Ziffern und die Schaltjahrkorrektur
    *
-   * @param tz
-   * @param mz
-   * @param jz
-   * @param jhz
-   * @param sjk
+   * @param wochentagsziffer
    * @return
    */
-  private String searchDay(int tz, int mz, int jz, int jhz, int sjk) {
-
-    // Ausführung der Formel gemäss Wikipediaartikel
-    var wochentagsziffer = (tz + mz + jz + jhz + sjk) % 7;
+  private String searchDay(int wochentagsziffer) {
     var day = "";
 
     // Select the correct day
@@ -221,26 +215,23 @@ public class WeekdayCalculator {
     var day = readNumber(TimeMeasurements.DAY);
     var month = readNumber(TimeMeasurements.MONTH);
     var year = readNumber(TimeMeasurements.YEAR);
-    // Get difference between days
     var daysCount = ChronoUnit.DAYS.between(LocalDate.now(), LocalDate.of(year, month, day));
+
     System.out.println("Your birthday is in " + daysCount + " days.");
   }
 
   public void showWeekday() {
-    // Get user input
     var day = readNumber(TimeMeasurements.DAY);
     var month = readNumber(TimeMeasurements.MONTH);
     var year = readNumber(TimeMeasurements.YEAR);
 
-    //Alle benötigten Ziffern berechnen.
     var tagesziffer = day % 7;
     var monatsziffer = monatszifferFinden(month);
     var jahresziffer = jahreszifferBerechnen(year);
     var jahrhundertziffer = jahrhundertzifferBerechnen(year);
     var schaltjahrkorrektur = leapYearCorrection(month, year);
-
-    //Wochentagsziffer Berechnen und Wochentag Holen.
-    var weekDay = searchDay(tagesziffer, monatsziffer, jahresziffer, jahrhundertziffer, schaltjahrkorrektur);
+    var wochentagsziffer = (tagesziffer + monatsziffer + jahresziffer + jahrhundertziffer + schaltjahrkorrektur) % 7;
+    var weekDay = searchDay(wochentagsziffer);
 
     System.out.println();
     System.out.println("Entered date:");
